@@ -8,7 +8,7 @@ photo = 6
 GPIO.setup(photo, GPIO.IN)
 state = 0
 while True:
-    if GPIO.input(photo):
-        state = not state
-        GPIO.output(led, state)
-        time.sleep(0.2)
+    if GPIO.input(photo) == 0:
+        GPIO.output(led, 0)
+    else:
+        GPIO.output(led, 1)
