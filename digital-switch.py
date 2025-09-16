@@ -1,4 +1,4 @@
-import RPI.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)
@@ -7,7 +7,7 @@ GPIO.setup(led, GPIO.OUT)
 state = 0
 period = 1.0
 
-botton = 13
+button = 13
 GPIO.setup(button, GPIO.IN)
 
 while True:
