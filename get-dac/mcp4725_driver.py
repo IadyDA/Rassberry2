@@ -28,9 +28,10 @@ class MCP4725:
         if self.verbose:
             print(f"Число: {number}, отправленные по I2C данные: [0x{(self.address << 1):02X}, 0x{first_byte:02X}, 0x{second_byte:02X}]\n")
 
+
     def set_voltage(self, voltage):
         self.voltage = voltage
-        self.pwm.ChangeDutyCycle(self.voltage)
+        GPIO.setup(, GPIO.OUT, initial = 0)
 
     def voltage_to_number(self, voltage):
         self.voltage = voltage
@@ -38,22 +39,22 @@ class MCP4725:
             print(f'Напряжение выходит за динамический диапазон ЦАП(0,00 - {self.dynamic_range} В')
             print('Устанавливаем 0.0 В')
             return 0
+    
         return int(self.voltage / self.dynamic_range * 100)
-            
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     try:
-        dac = MCP4725(5.11, 0x61, 
-
+        dac = MCP4725(5.11, 0x61, verbose = True)
         while True:
             try:
-                voltage = float(input("Введите напряжение в Вольтах: "))
+                voltage = float(input('Введите напряжение в Вольтах: '))
                 number = dac.voltage_to_number(voltage)
                 dac.set_voltage(number)
             
             except ValueError:
-                print("Вы ввели не число. Попробуйте ещё раз\n")
+                print('Вы ввели не число. Попробуйте ещё раз\n')
 
     finally:
         dac.deinit()
+
     
