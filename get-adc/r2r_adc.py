@@ -18,9 +18,13 @@ class R2R_ADC:
         GPIO.output(self.bits_gpio, 0)
         GPIO.cleanup()
 
+    def dec2bin(self, value):
+        self.value = value
+        return [int(element) for element in bin(self.value)[2:].zfill(8)]
+
     def number_to_dac(self, number):
         self.number = number
-        bins = [int(element) for element in bin(self.number)[2:].zfill(8)]
+        bins = self.dec2bin(self.number)
         i=0
         for bit in self.bits_gpio:
             GPIO.output(bit, bins[i])
@@ -28,30 +32,28 @@ class R2R_ADC:
 
     def sequential_counting_adc(self):
         for i in range(256):
-            number_to_dac(i)
-            time.sleep(0.01)
-            if GPIO.input(self.comp_gpio):
-                print(i)
-                i = 256
-            if i == 255 and not(GPIO.input(self.comp_gpio)):
-                print(i)
+            self.number_to_dac(i)
+            if GPIO.input(self.comp_gpio) != 0:
+                break
+        time.sleep(self.compare_time)
+        return i
 
     def get_sc_voltage(self):
-        for m in range(256):
-            return int(m / self.dynamic_range * 255)
+        return self.sequential_counting_adc() / 255 * self.dynamic_range
 
 
 if __name__ == '__main__':
     try:
-        dac = R2R_ADC(3.3, compare_time = 0.01, verbose = False)
+        adc = R2R_ADC(3.3, compare_time = 0.01, verbose = False)
 
         while True:
             try:
-                sequential_counting_adc()
+                u = adc.get_sc_voltage()
+                print(u)
 
             except ValueError:
                 print('Вы ввели не число. Попробуйте ещё раз\n')
 
     finally:
-        dac.deinit()
+        adc.deinit()
 
