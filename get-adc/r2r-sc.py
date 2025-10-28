@@ -21,6 +21,7 @@ if __name__ == '__main__':
             current_time = time.time()
         
         plt.plot_voltage_vs_time(time_values, voltage_values, 3.3)
+        plt.plot_sampling_period_hist(time_values)
 
     finally:
         adc.deinit()
